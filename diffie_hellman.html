@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diffie-Hellman Key Exchange</title>
+</head>
+<body>
+    <h2>Diffie-Hellman Key Exchange</h2>
+
+    <label>Prime number (p):</label>
+    <input id="p" type="number" value="23"><br><br>
+
+    <label>Generator (g):</label>
+    <input id="g" type="number" value="5"><br><br>
+
+    <label>Alice's private key:</label>
+    <input id="a" type="number" value="6"><br><br>
+
+    <label>Bob's private key:</label>
+    <input id="b" type="number" value="15"><br><br>
+
+    <button onclick="calculate()">Calculate Shared Key</button>
+
+    <p id="output"></p>
+
+    <script>
+        function powerMod(base, exp, mod) {
+            let result = 1;
+            base = base % mod;
+
+            while (exp > 0) {
+                if (exp % 2 === 1) {
+                    result = (result * base) % mod;
+                }
+                base = (base * base) % mod;
+                exp = Math.floor(exp / 2);
+            }
+            return result;
+        }
+
+        function calculate() {
+            const p = Number(document.getElementById("p").value);
+            const g = Number(document.getElementById("g").value);
+            const a = Number(document.getElementById("a").value);
+            const b = Number(document.getElementById("b").value);
+
+            if (p <= 2 || g <= 1 || g >= p ||
+                a < 1 || b < 1 ||
+                ![p, g, a, b].every(Number.isSafeInteger)) {
+                document.getElementById("output").innerText =
+                    "Enter valid positive integer values.";
+                return;
+            }
+
+            const alicePublic = powerMod(g, a, p);
+            const bobPublic = powerMod(g, b, p);
+
+            const aliceSecret = powerMod(bobPublic, a, p);
+            const bobSecret = powerMod(alicePublic, b, p);
+
+            document.getElementById("output").innerHTML =
+                "Alice's public value: " + alicePublic + "<br>" +
+                "Bob's public value: " + bobPublic + "<br>" +
+                "Alice's shared secret: " + aliceSecret + "<br>" +
+                "Bob's shared secret: " + bobSecret;
+        }
+    </script>
+</body>
+</html>
